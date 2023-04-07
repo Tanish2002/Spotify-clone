@@ -7,14 +7,21 @@
     <link rel="stylesheet" href="../style.css" />
     <title>Spotify Player</title>
   </head>
-  <body class="h-screen bg-dark text-white">
-    <main class="grid-template-areas grid grid-cols-[250px_1fr] grid-rows-[1fr_auto]">
+  <body class="h-screen bg-black text-white">
+    <main class="h-full grid-template-areas grid grid-cols-[250px_1fr] grid-rows-[1fr_auto]">
       <aside class="sidenav">sidenav</aside>
-      <section class="content"></section>
-      <header>
-        <nav></nav>
+      <section class="content">
+      <header class="border-solid border-2 px-8 py-4">
+        <nav class="flex justify-end">
+           <button id="user-profile-btn" class="flex items-center gap-x-2 rounded-2xl px-1 p-1 hover:bg-light-black">
+           <section>image</section>
+           <section>display name</section>
+           </button> navigation
+        </nav>
       </header>
-      <footer class="now-playing"></footer>
+      <section>content</section>
+    </section>
+      <footer class="now-playing">now playing</footer>
     </main>
   </body>
 </html>

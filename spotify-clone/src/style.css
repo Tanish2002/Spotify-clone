@@ -8,3 +8,14 @@
     "now-playing now-playing"
 }
 
+.grid-template-areas .content{
+  grid-area: main;
+}
+
+.grid-template-areas .sidenav{
+grid-area: sidenav;
+}
+
+.grid-template-areas .now-playing{
+    grid-area: now-playing;
+}
