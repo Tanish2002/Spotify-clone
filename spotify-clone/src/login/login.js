@@ -27,8 +27,8 @@ document.addEventListener("DOMContentLoaded",()=>{
 window.setItemsInlocalStorage = ({accessToken,tokenType,expiresIn})=>{
     localStorage.setItem(ACCESS_TOKEN, accessToken);
     localStorage.setItem(TOKEN_TYPE, tokenType);
-    localStorage.setItem(EXPIRES_IN, expiresIn);
-    window.location.href = `${APP_URL}/dashboard/dashboard.html`;
+    localStorage.setItem(EXPIRES_IN,(Date.now() +  (expiresIn*1000)));
+    window.location.href = APP_URL;
 }
 
 window.addEventListener("load",()=>{
