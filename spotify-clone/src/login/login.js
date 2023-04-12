@@ -7,14 +7,14 @@ const scopes = "user-top-read user-follow-read playlist-read-private user-librar
 
 
 const authorizeUser =()=>{
-const params = new URLSearchParams();
-params.append("client_id", CLIENT_ID);
-params.append("response_type", "code");
-params.append("redirect_uri", REDIRECT_URI);
-params.append("scope", scopes);
-params.append("show_dialog", true);
-// const url = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${REDIRECT_URI}&scope=${scopes}&show_dialog=true`;
-const url = `https://accounts.spotify.com/authorize?${params.toString()}`;
+// const params = new URLSearchParams();
+// params.append("client_id", CLIENT_ID);
+// params.append("response_type", "code");
+// params.append("redirect_uri", REDIRECT_URI);
+// params.append("scope", scopes);
+// params.append("show_dialog", true);
+const url = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${REDIRECT_URI}&scope=${scopes}&show_dialog=true`;
+// const url = `https://accounts.spotify.com/authorize?${params.toString()}`;
 console.log((url));
 window.open(url,"login","width=800,height=600");
 };
@@ -34,6 +34,7 @@ window.setItemsInlocalStorage = ({accessToken,tokenType,expiresIn})=>{
 window.addEventListener("load",()=>{
 
     const accessToken = localStorage.getItem(ACCESS_TOKEN);
+    console.log(accessToken);
     if(accessToken){
         window.location.href = `${APP_URL}/dashboard/dashboard.html`;
     }
