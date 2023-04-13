@@ -24,7 +24,7 @@ const loaduserProfile =async()=>{
         defaultImage.classList.remove("hidden");
     }
 
-    profileButton.addEventListener("click",onProfileClick)
+    profileButton.addEventListener("click",onProfileClick);
     displayNameElement.textContent= displayName;
 
 }
@@ -36,7 +36,7 @@ const loadfeaturedPlaylist = async ()=>{
 
 document.addEventListener("DOMContentLoaded",()=>{
        loaduserProfile();
-       loadfeaturedPlaylist();
+      //  loadfeaturedPlaylist();
        document.addEventListener("click",()=>{
         const profileMenu = document.querySelector("#profile-menu")
         if(!profileMenu.classList.contains("hidden")){

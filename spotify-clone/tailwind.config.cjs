@@ -10,7 +10,11 @@ module.exports = {
          "gray":"#535353",
          "secondary":"#b3b3b3"
     },
-    extend: {},
+    extend: {
+      gridTemplateColumns:{
+        'auto-fill-cards': 'repeat(auto-fill,minmax(200px,1fr))'
+      },
+    },
   },
   plugins: []
 }
