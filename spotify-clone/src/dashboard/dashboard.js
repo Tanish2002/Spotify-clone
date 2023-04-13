@@ -3,7 +3,7 @@ import { ENDPOINT, logout } from "../common";
 
 
 const onProfileClick =(event)=>{
-  event.stopPropogation();
+  event.stopPropagation();
   const profileMenu = document.querySelector("#profile-menu");
   profileMenu.classList.toggle("hidden");
   if(!profileMenu.classList.contains("hidden")){
@@ -30,13 +30,23 @@ const loaduserProfile =async()=>{
 }
 
 const loadfeaturedPlaylist = async ()=>{
-  const featuredPlaylist = await fetchRequest(ENDPOINT.userInfo);
-  console.log(featuredPlaylist);
+  const {playlists:{items,}} = await fetchRequest(ENDPOINT.featuredPlaylist);
+  const playlistItemsSection = document.querySelector("#featured-playlist-items");
+  let playlistItems = ``;
+  for(let {name ,description,images}of items){
+    const [{url:imageUrl}] = images;
+    playlistItems  +=`<section class="rounded p-4 border-solid border-2">
+    <img src="${imageUrl}" alt="${name}"/>
+    <h2 class="text-sm">${name}</h2>
+    <h3 class="text-xs">${description}</h3>
+  </section>`
+  }
+  playlistItemsSection.innerHTML = playlistItems;
 }
 
 document.addEventListener("DOMContentLoaded",()=>{
        loaduserProfile();
-      //  loadfeaturedPlaylist();
+       loadfeaturedPlaylist();
        document.addEventListener("click",()=>{
         const profileMenu = document.querySelector("#profile-menu")
         if(!profileMenu.classList.contains("hidden")){
