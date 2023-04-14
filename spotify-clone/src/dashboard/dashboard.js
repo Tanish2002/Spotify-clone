@@ -1,5 +1,5 @@
 import { fetchRequest } from "../api";
-import { ENDPOINT, logout } from "../common";
+import { ENDPOINT, SECTIONTYPE, logout } from "../common";
 
 const onProfileClick = (event) => {
   event.stopPropagation();
@@ -30,6 +30,9 @@ const loaduserProfile = async () => {
 
 const onPlaylistItemClicked = (event) => {
   console.log(event.target);
+  const section ={type: SECTIONTYPE.PLAYLIST};
+  history.pushState(section,"","playlist");
+  loadSection(section);
 };
 
 const loadPlaylist = async (endpoint, elementId) => {
@@ -73,8 +76,33 @@ const fillContentForDashboard = ()=>{
     pageContent.innerHTML= innerHTML;
 }
 
+const loadSection = (section)=>{
+ if(section.type=== SECTIONTYPE.DASHBOARD){
+  fillContentForDashboard();
+  loadPlaylists();
+ }else{
+const pageContent = document.querySelector("#page-content");
+pageContent.innerHTML = "playlist to be loaded here"
+ }
+}
+
+document.querySelector(".content").addEventListener("scroll",(event=>{
+  const{scrollTop} = event.target;
+  const header = document.querySelector(".header");
+  if(scrollTop>= header.offsetHeight){
+    header.classList.add("sticky","top-0","bg-black-secondary");
+    header.classList.remove("bg-transparent");
+  }else{
+    header.classList.remove("sticky","top-0","bg-black-secondary");
+    header.classList.add("bg-transparent");
+  }
+}))
+
 document.addEventListener("DOMContentLoaded", () => {
   loaduserProfile();
+  const section = {type: SECTIONTYPE.DASHBOARD}
+  history.pushState(section,"","");
+  loadSection(section);
   loadPlaylists();
   fillContentForDashboard();
   document.addEventListener("click", () => {
