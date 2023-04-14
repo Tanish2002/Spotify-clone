@@ -33,15 +33,15 @@ const onPlaylistItemClicked= (event)=>{
 console.log(event.target);
 }
 
-const loadfeaturedPlaylist = async ()=>{
-  const {playlists:{items,}} = await fetchRequest(ENDPOINT.featuredPlaylist);
-  const playlistItemsSection = document.querySelector("#featured-playlist-items");
+const loadPlaylist = async (endpoint ,elementId)=>{
+  const {playlists:{items}} = await fetchRequest(endpoint);
+  const playlistItemsSection = document.querySelector(`#${elementId}`);
  
 
 
   for(let {name ,description,images,id}of items){
     const playlistItem = document.createElement("section");
-    playlistItem.className = "rounded p-4 border-solid border-2 hover:cursor-pointer"
+    playlistItem.className = "rounded p-4 border-solid border-2 hover:cursor-pointer";
     playlistItem.id = id;
     playlistItem.setAttribute("data-type","playlist");
     playlistItem.addEventListener("click",onPlaylistItemClicked);
@@ -57,9 +57,14 @@ const loadfeaturedPlaylist = async ()=>{
 
 }
 
+const loadPlaylists =()=>{
+  loadPlaylist(ENDPOINT.featuredPlaylist,"featured-playlist-items");
+  loadPlaylist(ENDPOINT.toplists,"top-playlist-items");
+}
+
 document.addEventListener("DOMContentLoaded",()=>{
        loaduserProfile();
-       loadfeaturedPlaylist();
+       loadPlaylists();
        document.addEventListener("click",()=>{
         const profileMenu = document.querySelector("#profile-menu")
         if(!profileMenu.classList.contains("hidden")){

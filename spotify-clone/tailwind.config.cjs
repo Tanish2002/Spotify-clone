@@ -7,10 +7,10 @@ module.exports = {
          "black-base": "#121212",
          "black-primary":"#191414",
          "black-secondary":"#171818",
-         "white": "#fff",
+         "white": "#ffffff",
          "light-black":"#282828",
          "gray":"#535353",
-         "secondary":"#b3b3b3"
+         "secondary":"#b3b3b3",
     },
     extend: {
       gridTemplateColumns:{
