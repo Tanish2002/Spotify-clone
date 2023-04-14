@@ -7,13 +7,13 @@
     <link rel="stylesheet" href="../style.css" />
     <title>Spotify Player</title>
   </head>
-  <body class="h-screen bg-black-primary  text-white">
+  <body class="h-screen bg-black-primary text-white">
     <main
       class="grid-template-areas grid h-full grid-cols-[250px_1fr] grid-rows-[1fr_auto]"
     >
       <aside class="sidenav">sidenav</aside>
       <article class="content bg-black-base">
-        <header class="border-2 border-solid px-8 py-4 bg-transparent">
+        <header class="bg-transparent border-2 border-solid px-8 py-4">
           <nav class="flex justify-end">
             <button
               id="user-profile-btn"
@@ -51,42 +51,9 @@
             </ul>
           </nav>
         </header>
-        <article class="p-4">
-          <h1 class="text-2xl">Featured</h1>
-          <section
-            id="featured-playlist-items"
-            class="featured-songs grid grid-cols-auto-fill-cards gap-4"
-          >
-            <!-- <section class="rounded p-4 border-solid border-2">
-          <img src="" alt=""/>
-          <h2 class="text-sm">Name</h2>
-          <h3 class="text-xs">Description</h3>
-        </section>
-        <section>
-       <img src="" alt=""/>
-          <h2>Name</h2>
-          <h3>Description</h3>
-        </section> -->
-          </section>
-        </article>
-        <article class="p-4">
-          <h1 class="text-2xl">Toplists</h1>
-          <section
-            id="top-playlist-items"
-            class="featured-songs grid grid-cols-auto-fill-cards gap-4"
-          >
-            <!-- <section class="rounded p-4 border-solid border-2">
-          <img src="" alt=""/>
-          <h2 class="text-sm">Name</h2>
-          <h3 class="text-xs">Description</h3>
-        </section>
-        <section>
-       <img src="" alt=""/>
-          <h2>Name</h2>
-          <h3>Description</h3>
-        </section> -->
-          </section>
-        </article>
+
+        <section id="page-content"></section>
+    
       </article>
       <footer class="now-playing">now playing</footer>
     </main>
