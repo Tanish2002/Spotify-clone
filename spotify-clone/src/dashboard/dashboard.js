@@ -29,19 +29,32 @@ const loaduserProfile =async()=>{
 
 }
 
+const onPlaylistItemClicked= (event)=>{
+console.log(event.target);
+}
+
 const loadfeaturedPlaylist = async ()=>{
   const {playlists:{items,}} = await fetchRequest(ENDPOINT.featuredPlaylist);
   const playlistItemsSection = document.querySelector("#featured-playlist-items");
-  let playlistItems = ``;
-  for(let {name ,description,images}of items){
+ 
+
+
+  for(let {name ,description,images,id}of items){
+    const playlistItem = document.createElement("section");
+    playlistItem.className = "rounded p-4 border-solid border-2 hover:cursor-pointer"
+    playlistItem.id = id;
+    playlistItem.setAttribute("data-type","playlist");
+    playlistItem.addEventListener("click",onPlaylistItemClicked);
     const [{url:imageUrl}] = images;
-    playlistItems  +=`<section class="rounded p-4 border-solid border-2">
-    <img src="${imageUrl}" alt="${name}"/>
+    playlistItem.innerHTML=
+    `<img src="${imageUrl}" alt="${name} class="rounded mb-2 object-contain shadow "/>
     <h2 class="text-sm">${name}</h2>
-    <h3 class="text-xs">${description}</h3>
-  </section>`
+    <h3 class="text-xs">${description}</h3>`;
+
+    playlistItemsSection.appendChild(playlistItem);
+ 
   }
-  playlistItemsSection.innerHTML = playlistItems;
+
 }
 
 document.addEventListener("DOMContentLoaded",()=>{
