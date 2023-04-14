@@ -12,8 +12,8 @@
       class="grid-template-areas grid h-full grid-cols-[250px_1fr] grid-rows-[1fr_auto]"
     >
       <aside class="sidenav">sidenav</aside>
-      <article class="content bg-black-base">
-        <header class="bg-transparent border-2 border-solid px-8 py-4">
+      <article class=" relative content bg-transparent overflow-auto">
+        <header class="bg-transparent border-2 border-solid px-8 py-4 ">
           <nav class="flex justify-end">
             <button
               id="user-profile-btn"
@@ -51,9 +51,10 @@
             </ul>
           </nav>
         </header>
-
-        <section id="page-content"></section>
-    
+      <article id="cover-content" class="absolute top-0 grid content-center px-4 w-full -z-[1] h-72  bg-gradient-to-b from-light-black to to-black-base">
+        <h1 class="text-6xl">Hello Prakhar</h1>
+      </article>
+        <section id="page-content" class="bg-black-base mt-48"></section>
       </article>
       <footer class="now-playing">now playing</footer>
     </main>
