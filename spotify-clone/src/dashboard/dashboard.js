@@ -86,17 +86,9 @@ pageContent.innerHTML = "playlist to be loaded here"
  }
 }
 
-document.querySelector(".content").addEventListener("scroll",(event=>{
-  const{scrollTop} = event.target;
-  const header = document.querySelector(".header");
-  if(scrollTop>= header.offsetHeight){
-    header.classList.add("sticky","top-0","bg-black-secondary");
-    header.classList.remove("bg-transparent");
-  }else{
-    header.classList.remove("sticky","top-0","bg-black-secondary");
-    header.classList.add("bg-transparent");
-  }
-}))
+
+
+
 
 document.addEventListener("DOMContentLoaded", () => {
   loaduserProfile();
@@ -111,4 +103,20 @@ document.addEventListener("DOMContentLoaded", () => {
       profileMenu.classList.add("hidden");
     }
   });
+  document.querySelector(".content").addEventListener("scroll",(event)=>{
+    const{scrollTop} = event.target;
+    const header = document.querySelector(".header");
+    if(scrollTop>= header.offsetHeight){
+      header.classList.add("sticky","top-0","bg-black-secondary");
+      header.classList.remove("bg-transparent");
+    }else{
+      header.classList.remove("sticky","top-0","bg-black-secondary");
+      header.classList.add("bg-transparent");
+    }
+  })
+  window.addEventListener("popstate",(event)=>{
+    loadSection(event.state);
+  })
+  
+
 });
