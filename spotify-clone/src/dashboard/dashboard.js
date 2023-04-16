@@ -28,10 +28,10 @@ const loaduserProfile = async () => {
   displayNameElement.textContent = displayName;
 };
 
-const onPlaylistItemClicked = (event) => {
+const onPlaylistItemClicked = (event,id) => {
   console.log(event.target);
-  const section ={type: SECTIONTYPE.PLAYLIST};
-  history.pushState(section,"","playlist");
+  const section ={type: SECTIONTYPE.PLAYLIST , playlist: id};
+  history.pushState(section,"",`playlist${id}`);
   loadSection(section);
 };
 
@@ -46,7 +46,7 @@ const loadPlaylist = async (endpoint, elementId) => {
     playlistItem.className ="bg-black-secondary rounded p-4  hover:cursor-pointer hover:bg-light-black";
     playlistItem.id = id;
     playlistItem.setAttribute("data-type", "playlist");
-    playlistItem.addEventListener("click", onPlaylistItemClicked);
+    playlistItem.addEventListener("click",(event)=> onPlaylistItemClicked(event,id));
     const [{ url: imageUrl }] = images;
     playlistItem.innerHTML = `<img src="${imageUrl}" alt="${name} class="rounded mb-2 object-contain shadow "/>
     <h2 class="text-base font-semibold mb-4 truncate">${name}</h2>
@@ -76,11 +76,16 @@ const fillContentForDashboard = ()=>{
     pageContent.innerHTML= innerHTML;
 }
 
+const fillContentForPlaylist =async(playlistId)=>{
+  const playlist = fetchRequest(`${ENDPOINT.playlist}/${playlistId}`)
+}
+
 const loadSection = (section)=>{
  if(section.type=== SECTIONTYPE.DASHBOARD){
   fillContentForDashboard();
   loadPlaylists();
- }else{
+ }else if(section.type === SECTIONTYPE.PLAYLIST){
+ fillContentForPlaylist(section.playlist);
 const pageContent = document.querySelector("#page-content");
 pageContent.innerHTML = "playlist to be loaded here"
  }
@@ -95,8 +100,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const section = {type: SECTIONTYPE.DASHBOARD}
   history.pushState(section,"","");
   loadSection(section);
-  loadPlaylists();
-  fillContentForDashboard();
   document.addEventListener("click", () => {
     const profileMenu = document.querySelector("#profile-menu");
     if (!profileMenu.classList.contains("hidden")) {
