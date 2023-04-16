@@ -82,10 +82,46 @@ const fillContentForDashboard = () => {
   pageContent.innerHTML = innerHTML;
 };
 
+const loadPlaylistTracks =({tracks})=>{
+const trackSections = document.querySelector("#tracks");
+for(let trackItem of tracks.items){
+  let{id, artists, name , album , duration_ms} = trackItem;
+  let track = document.createElement("section");
+  track.className = "track p-1 grid grid-cols-[50px_2fr_1fr_50px] items-center justify-items-start gap-4 text-secondary rounded-md hover: bg-light-black";
+  let image = album.images.find(img=>img.height === 64);
+  track.innerHTML =` <section
+  <p class="justify-self-center">1</p>
+  <section class="grid grid-cols-2 gap-2">
+    <img class="h-8 w-8" src="${img.url}" alt="${name}" />
+    <article class="flex flex-col gap-1">
+      <h2 class="text-xl text-white">${name}</h2>
+      <p class="text-sm">${Array.from(artists, artist=>artist.name)}</p>
+    </article>
+  </section>
+  <p>album</p>
+  <p>1:36</p>
+</section>  `
+}
+}
+
 const fillContentForPlaylist = async (playlistId) => {
   const playlist = await fetchRequest(`${ENDPOINT.playlist}/${playlistId}`);
   const pageContent = document.querySelector("#page-content");
-  pageContent.innerHTML=""
+  pageContent.innerHTML=`   <header class="px-8">
+  <nav>
+    <ul
+      class="track grid grid-cols-[50px_2fr_1fr_50px] items-center justify-items-start gap-4 text-secondary rounded-md ">
+      <li class="justify-self-center">#</li>
+      <li>Title</li>
+      <li>Album</li>
+      <li>🕔</li>
+    </ul>
+  </nav>
+</header>
+<section class="px-8" id="tracks">
+</section>`
+document.createElement("section")
+loadPlaylistTracks(playlist);
   console.log(playlist);
   
 };
