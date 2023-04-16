@@ -59,6 +59,14 @@ const loadPlaylist = async (endpoint, elementId) => {
   }
 };
 
+const formattedTime = (duration)=>{
+const min = Math.floor(duration/60_000);
+const sec = ((duration % 6_000/1000).toFixed(0));
+const formattedTime = sec == 60?
+min+1 +":00":min+":"+(sec<10?"0":"")+sec;
+return formattedTime;
+}
+
 const loadPlaylists = () => {
   loadPlaylist(ENDPOINT.featuredPlaylist, "featured-playlist-items");
   loadPlaylist(ENDPOINT.toplists, "top-playlist-items");
@@ -92,16 +100,16 @@ for(let trackItem of tracks.items){
   track.className = "track p-1 grid grid-cols-[50px_2fr_1fr_50px] items-center justify-items-start gap-4 text-secondary rounded-md hover:bg-light-black";
   let image = album.images.find(img=>img.height === 64);
   track.innerHTML =`
-  <p class="justify-self-center">${trackNumber++}</p>
+  <p class="justify-self-center"><span class="track-no">${trackNumber++}span></p>
   <section class="grid grid-cols-[auto_1fr] place-items-center gap-2">
-    <img class="h-8 w-8" src="${image.url}" alt="${name}" />
-    <article class="flex flex-col">
-      <h2 class="text-xl text-white">${name}</h2>
-      <p class="text-sm text-secondary">${Array.from(artists, artist=>artist.name).join(", ")}</p>
+    <img class="h-10 w-8" src="${image.url}" alt="${name}" />
+    <article class="flex flex-col gap-2 justify-center">
+      <h2 class="text-base text-white">${name}</h2>
+      <p class="text-xs">${Array.from(artists, artist=>artist.name).join(", ")}</p>
     </article>
   </section>
-  <p>${album.name}</p>
-  <p>${duration}</p>
+  <p class="text-sm">${album.name}</p>
+  <p class="text-sm">${formattedTime(duration)}</p>
 `;
 trackSections.appendChild(track);
 }
@@ -110,10 +118,10 @@ trackSections.appendChild(track);
 const fillContentForPlaylist = async (playlistId) => {
   const playlist = await fetchRequest(`${ENDPOINT.playlist}/${playlistId}`);
   const pageContent = document.querySelector("#page-content");
-  pageContent.innerHTML=`   <header class="px-8">
-  <nav>
+  pageContent.innerHTML=`   <header id="playlist-header" class="mx-8 py-4 border-secondary border-b-[0.5px]">
+  <nav class="py-2">
     <ul
-      class="track grid grid-cols-[50px_2fr_1fr_50px] items-center justify-items-start gap-4 text-secondary rounded-md ">
+      class="track grid grid-cols-[50px_1fr_1fr_50px] items-center justify-items-start gap-4 text-secondary rounded-md  ">
       <li class="justify-self-center">#</li>
       <li>Title</li>
       <li>Album</li>
@@ -121,7 +129,7 @@ const fillContentForPlaylist = async (playlistId) => {
     </ul>
   </nav>
 </header>
-<section class="px-8" id="tracks">
+<section class="px-8 mt-4" id="tracks">
 </section>`
 document.createElement("section")
 loadPlaylistTracks(playlist);
@@ -129,27 +137,8 @@ loadPlaylistTracks(playlist);
   
 };
 
-const loadSection = (section) => {
-  if (section.type === SECTIONTYPE.DASHBOARD) {
-    fillContentForDashboard();
-    loadPlaylists();
-  } else if (section.type === SECTIONTYPE.PLAYLIST) {
-    fillContentForPlaylist(section.playlist);
-  }
-};
-
-document.addEventListener("DOMContentLoaded", () => {
-  loaduserProfile();
-  const section = { type: SECTIONTYPE.DASHBOARD };
-  history.pushState(section, "", "");
-  loadSection(section);
-  document.addEventListener("click", () => {
-    const profileMenu = document.querySelector("#profile-menu");
-    if (!profileMenu.classList.contains("hidden")) {
-      profileMenu.classList.add("hidden");
-    }
-  });
-  document.querySelector(".content").addEventListener("scroll", (event) => {
+const onContentScroll = (event)=>{
+  
     const { scrollTop } = event.target;
     const header = document.querySelector(".header");
     if (scrollTop >= header.offsetHeight) {
@@ -159,7 +148,48 @@ document.addEventListener("DOMContentLoaded", () => {
       header.classList.remove("sticky", "top-0", "bg-black-secondary");
       header.classList.add("bg-transparent");
     }
+    if(history.state.type === SECTIONTYPE.PLAYLIST){
+      const coverElement = document.querySelector("#cover-content");
+      const playlistHeader = document.querySelector("#playlist-header");
+   if(scrollTop >=(coverElement.offsetHeight - header.offsetHeight)){
+    playlistHeader.classList.add("sticky","bg-black-secondary","px-8");
+    playlistHeader.classList.remove("mx-8");
+    playlistHeader.style.top = `${header.offsetHeight}px`;
+   }else{
+    playlistHeader.classList.remove("sticky","bg-black-secondary","px-8");
+    playlistHeader.classList.add("mx-8");
+    playlistHeader.style.top = `revert`;
+   }
+
+    }
+   
+}
+
+const loadSection = (section) => {
+  if (section.type === SECTIONTYPE.DASHBOARD) {
+    fillContentForDashboard();
+    loadPlaylists();
+  } else if (section.type === SECTIONTYPE.PLAYLIST) {
+    fillContentForPlaylist(section.playlist);
+  }
+  document.querySelector(".content").removeEventListener("scroll",onContentScroll);
+  document.querySelector(".content").addEventListener("scroll",onContentScroll);
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+  loaduserProfile();
+  // const section = { type: SECTIONTYPE.DASHBOARD };
+  const section = {type:SECTIONTYPE.PLAYLIST,playlist:"37i9dQZF1DX44osRHySC1k"}
+  // history.pushState(section, "", "");
+  history.pushState(section, "", `/dashboard/playlist/${section.playlist}`);
+  loadSection(section);
+  document.addEventListener("click", () => {
+    const profileMenu = document.querySelector("#profile-menu");
+    if (!profileMenu.classList.contains("hidden")) {
+      profileMenu.classList.add("hidden");
+    }
   });
+
   window.addEventListener("popstate", (event) => {
     loadSection(event.state);
   });
