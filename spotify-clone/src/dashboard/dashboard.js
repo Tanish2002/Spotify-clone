@@ -28,10 +28,10 @@ const loaduserProfile = async () => {
   displayNameElement.textContent = displayName;
 };
 
-const onPlaylistItemClicked = (event,id) => {
+const onPlaylistItemClicked = (event, id) => {
   console.log(event.target);
-  const section ={type: SECTIONTYPE.PLAYLIST , playlist: id};
-  history.pushState(section,"",`playlist${id}`);
+  const section = { type: SECTIONTYPE.PLAYLIST, playlist: id };
+  history.pushState(section, "", `playlist/${id}`);
   loadSection(section);
 };
 
@@ -43,10 +43,13 @@ const loadPlaylist = async (endpoint, elementId) => {
 
   for (let { name, description, images, id } of items) {
     const playlistItem = document.createElement("section");
-    playlistItem.className ="bg-black-secondary rounded p-4  hover:cursor-pointer hover:bg-light-black";
+    playlistItem.className =
+      "bg-black-secondary rounded p-4  hover:cursor-pointer hover:bg-light-black";
     playlistItem.id = id;
     playlistItem.setAttribute("data-type", "playlist");
-    playlistItem.addEventListener("click",(event)=> onPlaylistItemClicked(event,id));
+    playlistItem.addEventListener("click", (event) =>
+      onPlaylistItemClicked(event, id)
+    );
     const [{ url: imageUrl }] = images;
     playlistItem.innerHTML = `<img src="${imageUrl}" alt="${name} class="rounded mb-2 object-contain shadow "/>
     <h2 class="text-base font-semibold mb-4 truncate">${name}</h2>
@@ -61,44 +64,45 @@ const loadPlaylists = () => {
   loadPlaylist(ENDPOINT.toplists, "top-playlist-items");
 };
 
-
-const fillContentForDashboard = ()=>{
-  const pageContent = document.querySelector("#page-content")
-  const playlistMap = new Map([["featured", "featured-playlist-items"],["top playlists","top-playlist-items"]]);
+const fillContentForDashboard = () => {
+  const pageContent = document.querySelector("#page-content");
+  const playlistMap = new Map([
+    ["featured", "featured-playlist-items"],
+    ["top playlists", "top-playlist-items"],
+  ]);
   let innerHTML = "";
-  for(let [type,id] of playlistMap){
-    innerHTML +=`<article class="p-4">
+  for (let [type, id] of playlistMap) {
+    innerHTML += `<article class="p-4">
     <h1 class="mb-4 text-2xl font-bold capitalize">${type}</h1>
     <section
       id="${id}"class="featured-songs grid grid-cols-auto-fill-cards gap-4"></section>
   </article>
-    `  }
-    pageContent.innerHTML= innerHTML;
-}
+    `;
+  }
+  pageContent.innerHTML = innerHTML;
+};
 
-const fillContentForPlaylist =async(playlistId)=>{
-  const playlist = fetchRequest(`${ENDPOINT.playlist}/${playlistId}`)
-}
+const fillContentForPlaylist = async (playlistId) => {
+  const playlist = await fetchRequest(`${ENDPOINT.playlist}/${playlistId}`);
+  const pageContent = document.querySelector("#page-content");
+  pageContent.innerHTML=""
+  console.log(playlist);
+  
+};
 
-const loadSection = (section)=>{
- if(section.type=== SECTIONTYPE.DASHBOARD){
-  fillContentForDashboard();
-  loadPlaylists();
- }else if(section.type === SECTIONTYPE.PLAYLIST){
- fillContentForPlaylist(section.playlist);
-const pageContent = document.querySelector("#page-content");
-pageContent.innerHTML = "playlist to be loaded here"
- }
-}
-
-
-
-
+const loadSection = (section) => {
+  if (section.type === SECTIONTYPE.DASHBOARD) {
+    // fillContentForDashboard();
+    // loadPlaylists();
+  } else if (section.type === SECTIONTYPE.PLAYLIST) {
+    fillContentForPlaylist(section.playlist);
+  }
+};
 
 document.addEventListener("DOMContentLoaded", () => {
   loaduserProfile();
-  const section = {type: SECTIONTYPE.DASHBOARD}
-  history.pushState(section,"","");
+  const section = { type: SECTIONTYPE.DASHBOARD };
+  history.pushState(section, "", "");
   loadSection(section);
   document.addEventListener("click", () => {
     const profileMenu = document.querySelector("#profile-menu");
@@ -106,20 +110,18 @@ document.addEventListener("DOMContentLoaded", () => {
       profileMenu.classList.add("hidden");
     }
   });
-  document.querySelector(".content").addEventListener("scroll",(event)=>{
-    const{scrollTop} = event.target;
+  document.querySelector(".content").addEventListener("scroll", (event) => {
+    const { scrollTop } = event.target;
     const header = document.querySelector(".header");
-    if(scrollTop>= header.offsetHeight){
-      header.classList.add("sticky","top-0","bg-black-secondary");
+    if (scrollTop >= header.offsetHeight) {
+      header.classList.add("sticky", "top-0", "bg-black-secondary");
       header.classList.remove("bg-transparent");
-    }else{
-      header.classList.remove("sticky","top-0","bg-black-secondary");
+    } else {
+      header.classList.remove("sticky", "top-0", "bg-black-secondary");
       header.classList.add("bg-transparent");
     }
-  })
-  window.addEventListener("popstate",(event)=>{
+  });
+  window.addEventListener("popstate", (event) => {
     loadSection(event.state);
-  })
-  
-
+  });
 });

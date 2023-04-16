@@ -12,8 +12,8 @@
       class="grid-template-areas grid h-full grid-cols-[250px_1fr] grid-rows-[1fr_auto]"
     >
       <aside class="sidenav">sidenav</aside>
-      <article class=" relative content bg-transparent overflow-auto">
-        <header class=" header bg-transparent  px-8 py-4 ">
+      <article class="content bg-transparent relative overflow-auto">
+        <header class="header bg-transparent px-8 py-4">
           <nav class="flex justify-end">
             <button
               id="user-profile-btn"
@@ -51,10 +51,40 @@
             </ul>
           </nav>
         </header>
-      <article id="cover-content" class="absolute top-0 grid content-center px-4 w-full -z-[1] h-72  bg-gradient-to-b from-light-black to to-black-base">
-        <h1 class="text-6xl">Hello Prakhar</h1>
-      </article>
-        <section id="page-content" class="bg-black-base mt-48"></section>
+        <article
+          id="cover-content"
+          class="to absolute top-0 -z-[1] grid h-72 w-full content-center bg-gradient-to-b from-light-black to-black-base px-4">
+          <h1 class="text-6xl">Hello Prakhar</h1>
+        </article>
+        <section id="page-content" class="mt-48 bg-black-base">
+          <header class="px-8">
+            <nav>
+              <ul
+                class="track grid grid-cols-[50px_2fr_1fr_50px] items-center justify-items-start gap-4 text-secondary rounded-md ">
+                <li class="justify-self-center">#</li>
+                <li>Title</li>
+                <li>Album</li>
+                <li>🕔</li>
+              </ul>
+            </nav>
+          </header>
+          <section class="px-8" id="tracks">
+            <section
+              class="grid grid-cols-[50px_2fr_1fr_50px] gap-4 text-secondary  hover:bg-light-black"
+            >
+              <p class="justify-self-center">1</p>
+              <section class="grid grid-cols-2 gap-2">
+                <img class="h-8 w-8" src="" alt="" />
+                <article class="flex flex-col gap-1">
+                  <h2 class="text-xl text-white">song</h2>
+                  <p class="text-sm">artists</p>
+                </article>
+              </section>
+              <p>album</p>
+              <p>1:36</p>
+            </section>
+          </section>
+        </section>
       </article>
       <footer class="now-playing">now playing</footer>
     </main>
