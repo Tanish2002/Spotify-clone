@@ -84,23 +84,26 @@ const fillContentForDashboard = () => {
 
 const loadPlaylistTracks =({tracks})=>{
 const trackSections = document.querySelector("#tracks");
+let trackNumber = 1;
 for(let trackItem of tracks.items){
-  let{id, artists, name , album , duration_ms} = trackItem;
+  let{id, artists, name , album , duration_ms :duration} = trackItem.track;
   let track = document.createElement("section");
-  track.className = "track p-1 grid grid-cols-[50px_2fr_1fr_50px] items-center justify-items-start gap-4 text-secondary rounded-md hover: bg-light-black";
+  track.id = id;
+  track.className = "track p-1 grid grid-cols-[50px_2fr_1fr_50px] items-center justify-items-start gap-4 text-secondary rounded-md hover:bg-light-black";
   let image = album.images.find(img=>img.height === 64);
-  track.innerHTML =` <section
-  <p class="justify-self-center">1</p>
-  <section class="grid grid-cols-2 gap-2">
-    <img class="h-8 w-8" src="${img.url}" alt="${name}" />
-    <article class="flex flex-col gap-1">
+  track.innerHTML =`
+  <p class="justify-self-center">${trackNumber++}</p>
+  <section class="grid grid-cols-[auto_1fr] place-items-center gap-2">
+    <img class="h-8 w-8" src="${image.url}" alt="${name}" />
+    <article class="flex flex-col">
       <h2 class="text-xl text-white">${name}</h2>
-      <p class="text-sm">${Array.from(artists, artist=>artist.name)}</p>
+      <p class="text-sm text-secondary">${Array.from(artists, artist=>artist.name).join(", ")}</p>
     </article>
   </section>
-  <p>album</p>
-  <p>1:36</p>
-</section>  `
+  <p>${album.name}</p>
+  <p>${duration}</p>
+`;
+trackSections.appendChild(track);
 }
 }
 
@@ -128,8 +131,8 @@ loadPlaylistTracks(playlist);
 
 const loadSection = (section) => {
   if (section.type === SECTIONTYPE.DASHBOARD) {
-    // fillContentForDashboard();
-    // loadPlaylists();
+    fillContentForDashboard();
+    loadPlaylists();
   } else if (section.type === SECTIONTYPE.PLAYLIST) {
     fillContentForPlaylist(section.playlist);
   }
