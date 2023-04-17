@@ -17,7 +17,7 @@
     >
       <aside class="sidenav">sidenav</aside>
       <article class="content bg-transparent relative overflow-auto">
-        <header class="header bg-transparent px-8 py-4">
+        <header class="header bg-transparent px-8 py-4 z-10">
           <nav class="flex justify-end">
             <button
               id="user-profile-btn"
@@ -102,23 +102,34 @@
               </section>
             </section>
           </section>
-          <section id="audio-control">
+          <section
+            id="audio-control"
+            class="flex flex-col items-center justify-center"
+          >
             <section class="flex items-center justify-center hover:text-white">
               <button id="prev">
-                <span class="material-symbols-outlined"> skip_previous </span>
+                <span style="font-size: 48px;" class="material-symbols-outlined"> skip_previous </span>
               </button>
               <button id="play">
-                <span class="material-symbols-outlined"> play_circle </span>
+                <span style="font-size: 48px;" class="material-symbols-outlined"> play_circle </span>
               </button>
               <button id="next">
-                <span class="material-symbols-outlined"> skip_next </span>
+                <span style="font-size: 48px;" class="material-symbols-outlined"> skip_next </span>
               </button>
             </section>
+            <section class="flex w-full items-center justify-center gap-4 p-1">
+              <span id="song-Duration-Completed">0:00</span>
+              <section
+                id="progress"
+                class="h-2 w-full cursor-pointer rounded-3xl bg-secondary"
+              ></section>
+              <span id="total-song-duration">0:00</span>
+            </section>
           </section>
-          <section class="w-full flex items-center justify-center p-1">
-            <span id="songDurationCompleted"></span>
+          <section id="volume-control" class="flex items-center justify-center">
+            <span class="material-symbols-outlined"> volume_up </span>
+            <input type="text" class="" name="" value="" min="0" max="100" />
           </section>
-          <section>volume</section>
         </section>
       </footer>
     </main>
