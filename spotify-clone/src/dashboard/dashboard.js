@@ -90,27 +90,49 @@ const fillContentForDashboard = () => {
   pageContent.innerHTML = innerHTML;
 };
 
+const onTrackSelection =(id , event)=>{
+document.querySelectorAll("#tracks .track").forEach(trackItem=>{
+  if(trackItem.id === id){
+    trackItem.classList.add("bg-gray" , "selected");
+  }else{
+    trackItem.classList.remove("bg-gray","selected");
+  }
+})
+}
+
+const onPlayTrack =(event,{image,artistNames,name ,duration, previewUrl , id})=>{
+console.log(image,artistNames,name ,duration, previewUrl , id);
+}
+
 const loadPlaylistTracks =({tracks})=>{
 const trackSections = document.querySelector("#tracks");
 let trackNumber = 1;
 for(let trackItem of tracks.items){
-  let{id, artists, name , album , duration_ms :duration} = trackItem.track;
+  let{id, artists, name , album , duration_ms :duration , preview_url : previewUrl} = trackItem.track;
   let track = document.createElement("section");
   track.id = id;
   track.className = "track p-1 grid grid-cols-[50px_2fr_1fr_50px] items-center justify-items-start gap-4 text-secondary rounded-md hover:bg-light-black";
   let image = album.images.find(img=>img.height === 64);
+  let artistNames = Array.from(artists, artist=>artist.name).join(", ");
   track.innerHTML =`
-  <p class="justify-self-center"><span class="track-no">${trackNumber++}span></p>
+  <p class="relative w-full flex items-center justify-center justify-self-center"><span class="track-no">${trackNumber++}</span></p>
   <section class="grid grid-cols-[auto_1fr] place-items-center gap-2">
     <img class="h-10 w-8" src="${image.url}" alt="${name}" />
     <article class="flex flex-col gap-2 justify-center">
-      <h2 class="text-base text-white">${name}</h2>
-      <p class="text-xs">${Array.from(artists, artist=>artist.name).join(", ")}</p>
+      <h2 class="text-base text-white line-clamp-1">${name}</h2>
+      <p class="text-xs line-clamp-1">${artistNames}</p>
     </article>
   </section>
   <p class="text-sm">${album.name}</p>
   <p class="text-sm">${formattedTime(duration)}</p>
 `;
+track.addEventListener("click",(event)=> onTrackSelection(id,event));
+const playButton = document.createElement("button");
+playButton.id = `play-track${id}`;
+playButton.className = `play w-full absolute left-0 text-lg invisible`;
+playButton.textContent = `▶`;
+playButton.addEventListener("click",(event)=> onPlayTrack(event,{image,artistNames,name ,duration, previewUrl , id}))
+track.querySelector("p").appendChild(playButton);
 trackSections.appendChild(track);
 }
 }
