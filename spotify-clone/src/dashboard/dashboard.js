@@ -102,6 +102,11 @@ document.querySelectorAll("#tracks .track").forEach(trackItem=>{
 
 const onPlayTrack =(event,{image,artistNames,name ,duration, previewUrl , id})=>{
 console.log(image,artistNames,name ,duration, previewUrl , id);
+
+const nowPlayingSongImage = document.querySelector("#now-playing-image");
+const songTitle = document.querySelector("#now-playing-song");
+const artists = document.querySelector("#now-playing-artists");
+nowPlayingSongImage.src = image.url;
 }
 
 const loadPlaylistTracks =({tracks})=>{
