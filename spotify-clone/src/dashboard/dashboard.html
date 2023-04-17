@@ -73,9 +73,17 @@
           </section>
         </section>
       </article>
-      <footer class="now-playing border-t-light-black bg-black-secondary px-4 text-secondary">
-        <section>
-<section>song info</section>
+      <footer class="now-playing border-t border-t-light-black bg-black-secondary px-4 text-secondary">
+        <section class="grid grid-cols-[1fr_2fr_1fr] gap-4">
+<section>
+  <section class="grid grid-cols-[auto_1fr] place-content-center gap-4">
+    <img id="now-playing-image" class="h-12 w-12" src="" alt="title"/>
+    <section class="flex flex-col justify-center">
+      <h2 id="now-playing-song" class="text-sm font-semibold text-white">song title</h2>
+      <p id="now-playing-artists" class="text-xs">artists name</p>
+    </section>
+  </section>
+</section>
 <section>audio control</section>
 <section>volume</section>
         </section>
