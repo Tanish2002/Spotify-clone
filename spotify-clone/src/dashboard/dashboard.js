@@ -8,7 +8,7 @@ const playButton = document.querySelector("#play");
 const totalSongDuration = document.querySelector("#total-song-duration");
 const songDurationCompleted = document.querySelector("#song-Duration-Completed");
 const songProgress = document.querySelector("#progress");
-
+let progressInterval;
 
 
 const onProfileClick = (event) => {
@@ -69,7 +69,7 @@ const loadPlaylist = async (endpoint, elementId) => {
   }
 };
 
-const formattedTime = (duration)=>{
+const formatTime = (duration)=>{
 const min = Math.floor(duration/60_000);
 const sec = ((duration % 6_000/1000).toFixed(0));
 const formattedTime = sec == 60?
@@ -110,6 +110,12 @@ document.querySelectorAll("#tracks .track").forEach(trackItem=>{
 })
 }
 
+const AudioMetadataLoaded =()=>{
+  totalSongDuration.textContent = `0:${audio.duration.toFixed(0)}`;
+}
+
+
+
 
 const onPlayTrack =(event,{image,artistNames,name ,duration, previewUrl , id})=>{
 console.log(image,artistNames,name ,duration, previewUrl , id);
@@ -122,9 +128,20 @@ nowPlayingSongImage.src = image.url;
 songTitle.textContent = name;
 artists.textContent - artistNames;
 
-audio.src = previewUrl;
-audio.play();
 
+audio.src = previewUrl;
+audio.removeEventListener("loadedmetadata",AudioMetadataLoaded);
+audio.addEventListener("loadedmetadata",AudioMetadataLoaded)
+audio.play();
+clearInterval(progressInterval);
+progressInterval = setInterval(() => {
+  if(audio.pause){
+    return
+  }
+songDurationCompleted.textContent = formatTime(audio.currentTime * 1000);
+songProgress.style.width = (audio.currentTime / audio.duration)*100;
+  
+}, 100);
 }
 
 const loadPlaylistTracks =({tracks})=>{
@@ -147,7 +164,7 @@ for(let trackItem of tracks.items){
     </article>
   </section>
   <p class="text-sm">${album.name}</p>
-  <p class="text-sm">${formattedTime(duration)}</p>
+  <p class="text-sm">${formatTime(duration)}</p>
 `;
 track.addEventListener("click",(event)=> onTrackSelection(id,event));
 const playButton = document.createElement("button");
