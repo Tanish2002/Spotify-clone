@@ -1,6 +1,16 @@
 import { fetchRequest } from "../api";
 import { ENDPOINT, SECTIONTYPE, logout } from "../common";
 
+
+const audio = new Audio();
+const volume = document.querySelector("#volume");
+const playButton = document.querySelector("#play");
+const totalSongDuration = document.querySelector("#total-song-duration");
+const songDurationCompleted = document.querySelector("#song-Duration-Completed");
+const songProgress = document.querySelector("#progress");
+
+
+
 const onProfileClick = (event) => {
   event.stopPropagation();
   const profileMenu = document.querySelector("#profile-menu");
@@ -100,6 +110,7 @@ document.querySelectorAll("#tracks .track").forEach(trackItem=>{
 })
 }
 
+
 const onPlayTrack =(event,{image,artistNames,name ,duration, previewUrl , id})=>{
 console.log(image,artistNames,name ,duration, previewUrl , id);
 
@@ -107,6 +118,13 @@ const nowPlayingSongImage = document.querySelector("#now-playing-image");
 const songTitle = document.querySelector("#now-playing-song");
 const artists = document.querySelector("#now-playing-artists");
 nowPlayingSongImage.src = image.url;
+
+songTitle.textContent = name;
+artists.textContent - artistNames;
+
+audio.src = previewUrl;
+audio.play();
+
 }
 
 const loadPlaylistTracks =({tracks})=>{
