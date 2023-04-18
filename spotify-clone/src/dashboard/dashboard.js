@@ -1,15 +1,16 @@
 import { fetchRequest } from "../api";
 import { ENDPOINT, SECTIONTYPE, logout } from "../common";
 
-
 const audio = new Audio();
 const volume = document.querySelector("#volume");
 const playButton = document.querySelector("#play");
 const totalSongDuration = document.querySelector("#total-song-duration");
-const songDurationCompleted = document.querySelector("#song-Duration-Completed");
+const songDurationCompleted = document.querySelector(
+  "#song-Duration-Completed"
+);
 const songProgress = document.querySelector("#progress");
+const timeline = document.querySelector("#timeline");
 let progressInterval;
-
 
 const onProfileClick = (event) => {
   event.stopPropagation();
@@ -69,13 +70,13 @@ const loadPlaylist = async (endpoint, elementId) => {
   }
 };
 
-const formatTime = (duration)=>{
-const min = Math.floor(duration/60_000);
-const sec = ((duration % 6_000/1000).toFixed(0));
-const formattedTime = sec == 60?
-min+1 +":00":min+":"+(sec<10?"0":"")+sec;
-return formattedTime;
-}
+const formatTime = (duration) => {
+  const min = Math.floor(duration / 60_000);
+  const sec = ((duration % 6_000) / 1000).toFixed(0);
+  const formattedTime =
+    sec == 60 ? min + 1 + ":00" : min + ":" + (sec < 10 ? "0" : "") + sec;
+  return formattedTime;
+};
 
 const loadPlaylists = () => {
   loadPlaylist(ENDPOINT.featuredPlaylist, "featured-playlist-items");
@@ -100,61 +101,90 @@ const fillContentForDashboard = () => {
   pageContent.innerHTML = innerHTML;
 };
 
-const onTrackSelection =(id , event)=>{
-document.querySelectorAll("#tracks .track").forEach(trackItem=>{
-  if(trackItem.id === id){
-    trackItem.classList.add("bg-gray" , "selected");
-  }else{
-    trackItem.classList.remove("bg-gray","selected");
-  }
-})
+const onTrackSelection = (id, event) => {
+  document.querySelectorAll("#tracks .track").forEach((trackItem) => {
+    if (trackItem.id === id) {
+      trackItem.classList.add("bg-gray", "selected");
+    } else {
+      trackItem.classList.remove("bg-gray", "selected");
+    }
+  });
+};
+
+const updatedIconsForPlayMode =(id)=>{
+  playButton.querySelector("span").textContent = "pause_circle"
+  const playButtonFromTracks= document.querySelector(`#play-track${id}`)
+  playButtonFromTracks.textContent ="| |"
 }
 
-const AudioMetadataLoaded =()=>{
+const AudioMetadataLoaded = (id) => {
   totalSongDuration.textContent = `0:${audio.duration.toFixed(0)}`;
-}
+    updatedIconsForPlayMode(id);
+};
 
-
-
-
-const onPlayTrack =(event,{image,artistNames,name ,duration, previewUrl , id})=>{
-console.log(image,artistNames,name ,duration, previewUrl , id);
-
-const nowPlayingSongImage = document.querySelector("#now-playing-image");
-const songTitle = document.querySelector("#now-playing-song");
-const artists = document.querySelector("#now-playing-artists");
-nowPlayingSongImage.src = image.url;
-
-songTitle.textContent = name;
-artists.textContent - artistNames;
-
-
-audio.src = previewUrl;
-audio.removeEventListener("loadedmetadata",AudioMetadataLoaded);
-audio.addEventListener("loadedmetadata",AudioMetadataLoaded)
-audio.play();
-clearInterval(progressInterval);
-progressInterval = setInterval(() => {
-  if(audio.pause){
-    return
+const onNowPlayingPlayButtonClicked =(id)=>{
+  if(audio.paused){
+     audio.play();
+     updatedIconsForPlayMode(id);
+  }else{
+    audio.pause();
+    playButton.querySelector("span").textContent = "play_circle"
+    const playButtonFromTracks= document.querySelector(`#play-track${id}`)
+    playButtonFromTracks.textContent ="▶";
   }
-songDurationCompleted.textContent = formatTime(audio.currentTime * 1000);
-songProgress.style.width = (audio.currentTime / audio.duration)*100;
-  
-}, 100);
 }
 
-const loadPlaylistTracks =({tracks})=>{
-const trackSections = document.querySelector("#tracks");
-let trackNumber = 1;
-for(let trackItem of tracks.items){
-  let{id, artists, name , album , duration_ms :duration , preview_url : previewUrl} = trackItem.track;
-  let track = document.createElement("section");
-  track.id = id;
-  track.className = "track p-1 grid grid-cols-[50px_2fr_1fr_50px] items-center justify-items-start gap-4 text-secondary rounded-md hover:bg-light-black";
-  let image = album.images.find(img=>img.height === 64);
-  let artistNames = Array.from(artists, artist=>artist.name).join(", ");
-  track.innerHTML =`
+const onPlayTrack = (
+  event,
+  { image, artistNames, name, duration, previewUrl, id }
+) => {
+  console.log(image, artistNames, name, duration, previewUrl, id);
+
+  const nowPlayingSongImage = document.querySelector("#now-playing-image");
+  nowPlayingSongImage.src = image.url;
+  const songTitle = document.querySelector("#now-playing-song");
+  const artists = document.querySelector("#now-playing-artists");
+
+  songTitle.textContent = name;
+  artists.textContent - artistNames;
+
+  audio.src = previewUrl;
+  audio.removeEventListener("loadedmetadata",()=> AudioMetadataLoaded(id));
+  audio.addEventListener("loadedmetadata",()=> AudioMetadataLoaded(id));
+  playButton.addEventListener("click",()=>onNowPlayingPlayButtonClicked(id));
+  audio.play();
+  clearInterval(progressInterval);
+
+
+  progressInterval = setInterval(() => {
+    if (audio.paused) {
+      return
+    }
+    songDurationCompleted.textContent = `${audio.currentTime.toFixed(0)<10 ? "0:0"+ audio.currentTime.toFixed(0):audio.currentTime.toFixed(0)}`;
+    songProgress.style.width = `${(audio.currentTime / audio.duration) * 100}%`;
+  
+  }, 100);
+};
+
+const loadPlaylistTracks = ({ tracks }) => {
+  const trackSections = document.querySelector("#tracks");
+  let trackNumber = 1;
+  for (let trackItem of tracks.items) {
+    let {
+      id,
+      artists,
+      name,
+      album,
+      duration_ms: duration,
+      preview_url: previewUrl,
+    } = trackItem.track;
+    let track = document.createElement("section");
+    track.id = id;
+    track.className =
+      "track p-1 grid grid-cols-[50px_2fr_1fr_50px] items-center justify-items-start gap-4 rounded-md hover:bg-light-black";
+    let image = album.images.find(img => img.height === 64);
+    let artistNames = Array.from(artists, artist => artist.name).join(", ");
+    track.innerHTML = `
   <p class="relative w-full flex items-center justify-center justify-self-center"><span class="track-no">${trackNumber++}</span></p>
   <section class="grid grid-cols-[auto_1fr] place-items-center gap-2">
     <img class="h-10 w-8" src="${image.url}" alt="${name}" />
@@ -166,21 +196,23 @@ for(let trackItem of tracks.items){
   <p class="text-sm">${album.name}</p>
   <p class="text-sm">${formatTime(duration)}</p>
 `;
-track.addEventListener("click",(event)=> onTrackSelection(id,event));
-const playButton = document.createElement("button");
-playButton.id = `play-track${id}`;
-playButton.className = `play w-full absolute left-0 text-lg invisible`;
-playButton.textContent = `▶`;
-playButton.addEventListener("click",(event)=> onPlayTrack(event,{image,artistNames,name ,duration, previewUrl , id}))
-track.querySelector("p").appendChild(playButton);
-trackSections.appendChild(track);
-}
-}
+    track.addEventListener("click", (event) => onTrackSelection(id, event));
+    const playButton = document.createElement("button");
+    playButton.id = `play-track${id}`;
+    playButton.className = `play w-full absolute left-0 text-lg invisible`;
+    playButton.textContent = "▶";
+    playButton.addEventListener("click", (event) =>
+      onPlayTrack(event, { image, artistNames, name, duration, previewUrl, id })
+    );
+    track.querySelector("p").appendChild(playButton);
+    trackSections.appendChild(track);
+  } 
+};
 
 const fillContentForPlaylist = async (playlistId) => {
   const playlist = await fetchRequest(`${ENDPOINT.playlist}/${playlistId}`);
   const pageContent = document.querySelector("#page-content");
-  pageContent.innerHTML=`   <header id="playlist-header" class="mx-8 py-4 border-secondary border-b-[0.5px] z-10">
+  pageContent.innerHTML = `<header id="playlist-header" class="mx-8 py-4 border-secondary border-b-[0.5px] z-10">
   <nav class="py-2">
     <ul
       class="track grid grid-cols-[50px_1fr_1fr_50px] items-center justify-items-start gap-4 text-secondary rounded-md  ">
@@ -192,40 +224,36 @@ const fillContentForPlaylist = async (playlistId) => {
   </nav>
 </header>
 <section class="px-8 mt-4" id="tracks">
-</section>`
-document.createElement("section")
-loadPlaylistTracks(playlist);
+</section>`;
+  document.createElement("section");
+  loadPlaylistTracks(playlist);
   console.log(playlist);
-  
 };
 
-const onContentScroll = (event)=>{
-  
-    const { scrollTop } = event.target;
-    const header = document.querySelector(".header");
-    if (scrollTop >= header.offsetHeight) {
-      header.classList.add("sticky", "top-0", "bg-black-secondary");
-      header.classList.remove("bg-transparent");
+const onContentScroll = (event) => {
+  const { scrollTop } = event.target;
+  const header = document.querySelector(".header");
+  if (scrollTop >= header.offsetHeight) {
+    header.classList.add("sticky", "top-0", "bg-black-secondary");
+    header.classList.remove("bg-transparent");
+  } else {
+    header.classList.remove("sticky", "top-0", "bg-black-secondary");
+    header.classList.add("bg-transparent");
+  }
+  if (history.state.type === SECTIONTYPE.PLAYLIST) {
+    const coverElement = document.querySelector("#cover-content");
+    const playlistHeader = document.querySelector("#playlist-header");
+    if (scrollTop >= coverElement.offsetHeight - header.offsetHeight) {
+      playlistHeader.classList.add("sticky", "bg-black-secondary", "px-8");
+      playlistHeader.classList.remove("mx-8");
+      playlistHeader.style.top = `${header.offsetHeight}px`;
     } else {
-      header.classList.remove("sticky", "top-0", "bg-black-secondary");
-      header.classList.add("bg-transparent");
+      playlistHeader.classList.remove("sticky", "bg-black-secondary", "px-8");
+      playlistHeader.classList.add("mx-8");
+      playlistHeader.style.top = `revert`;
     }
-    if(history.state.type === SECTIONTYPE.PLAYLIST){
-      const coverElement = document.querySelector("#cover-content");
-      const playlistHeader = document.querySelector("#playlist-header");
-   if(scrollTop >=(coverElement.offsetHeight - header.offsetHeight)){
-    playlistHeader.classList.add("sticky","bg-black-secondary","px-8");
-    playlistHeader.classList.remove("mx-8");
-    playlistHeader.style.top = `${header.offsetHeight}px`;
-   }else{
-    playlistHeader.classList.remove("sticky","bg-black-secondary","px-8");
-    playlistHeader.classList.add("mx-8");
-    playlistHeader.style.top = `revert`;
-   }
-
-    }
-   
-}
+  }
+};
 
 const loadSection = (section) => {
   if (section.type === SECTIONTYPE.DASHBOARD) {
@@ -234,14 +262,21 @@ const loadSection = (section) => {
   } else if (section.type === SECTIONTYPE.PLAYLIST) {
     fillContentForPlaylist(section.playlist);
   }
-  document.querySelector(".content").removeEventListener("scroll",onContentScroll);
-  document.querySelector(".content").addEventListener("scroll",onContentScroll);
+  document
+    .querySelector(".content")
+    .removeEventListener("scroll", onContentScroll);
+  document
+    .querySelector(".content")
+    .addEventListener("scroll", onContentScroll);
 };
 
 document.addEventListener("DOMContentLoaded", () => {
   loaduserProfile();
   // const section = { type: SECTIONTYPE.DASHBOARD };
-  const section = {type:SECTIONTYPE.PLAYLIST,playlist:"37i9dQZF1DX44osRHySC1k"}
+  const section = {
+    type: SECTIONTYPE.PLAYLIST,
+    playlist: "37i9dQZF1DX44osRHySC1k",
+  };
   // history.pushState(section, "", "");
   history.pushState(section, "", `/dashboard/playlist/${section.playlist}`);
   loadSection(section);

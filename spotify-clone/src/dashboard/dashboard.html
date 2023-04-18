@@ -17,7 +17,7 @@
     >
       <aside class="sidenav">sidenav</aside>
       <article class="content bg-transparent relative overflow-auto">
-        <header class="header bg-transparent px-8 py-4 z-10">
+        <header class="header bg-transparent z-10 px-8 py-4">
           <nav class="flex justify-end">
             <button
               id="user-profile-btn"
@@ -108,27 +108,45 @@
           >
             <section class="flex items-center justify-center hover:text-white">
               <button id="prev">
-                <span style="font-size: 48px;" class="material-symbols-outlined"> skip_previous </span>
+                <span style="font-size: 48px" class="material-symbols-outlined">
+                  skip_previous
+                </span>
               </button>
               <button id="play">
-                <span style="font-size: 48px;" class="material-symbols-outlined"> play_circle </span>
+                <span style="font-size: 48px" class="material-symbols-outlined">
+                  play_circle
+                </span>
               </button>
               <button id="next">
-                <span style="font-size: 48px;" class="material-symbols-outlined"> skip_next </span>
+                <span style="font-size: 48px" class="material-symbols-outlined">
+                  skip_next
+                </span>
               </button>
             </section>
             <section class="flex w-full items-center justify-center gap-4 p-1">
               <span id="song-Duration-Completed">0:00</span>
+              <section id="timeline" class="bg-white w-full cursor-pointer  rounded-3xl">
+
+              </section>
               <section
                 id="progress"
-                class="h-2 w-full cursor-pointer rounded-3xl bg-secondary"
+                class="h-2 bg-green w-0 rounded-3xl"
+                class="h-2 bg-green w-0 rounded-3xl"
               ></section>
               <span id="total-song-duration">0:00</span>
             </section>
           </section>
           <section id="volume-control" class="flex items-center justify-center">
             <span class="material-symbols-outlined"> volume_up </span>
-            <input id="volume" type="range" class="" name="" value="100" min="0" max="100" />
+            <input
+              id="volume"
+              type="range"
+              class=""
+              name=""
+              value="100"
+              min="0"
+              max="100"
+            />
           </section>
         </section>
       </footer>
