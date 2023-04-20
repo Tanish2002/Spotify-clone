@@ -1,6 +1,9 @@
 import { fetchRequest } from "../api";
 import { ENDPOINT, SECTIONTYPE, logout } from "../common";
 
+
+const controller = new AbortController();
+const signal = controller.signal;
 const audio = new Audio();
 const volume = document.querySelector("#volume");
 const playButton = document.querySelector("#play");
@@ -9,7 +12,7 @@ const songDurationCompleted = document.querySelector(
   "#song-Duration-Completed"
 );
 const songProgress = document.querySelector("#progress");
-const timeline = document.querySelector("#timeline");
+// const timeline = document.querySelector("#timeline");
 let progressInterval;
 
 const onProfileClick = (event) => {
@@ -47,15 +50,13 @@ const onPlaylistItemClicked = (event, id) => {
 };
 
 const loadPlaylist = async (endpoint, elementId) => {
-  const {
-    playlists: { items },
-  } = await fetchRequest(endpoint);
+  const { playlists: { items } } = await fetchRequest(endpoint);
   const playlistItemsSection = document.querySelector(`#${elementId}`);
 
   for (let { name, description, images, id } of items) {
     const playlistItem = document.createElement("section");
     playlistItem.className =
-      "bg-black-secondary rounded p-4  hover:cursor-pointer hover:bg-light-black";
+      "bg-black-secondary rounded p-4 hover:cursor-pointer hover:bg-light-black";
     playlistItem.id = id;
     playlistItem.setAttribute("data-type", "playlist");
     playlistItem.addEventListener("click", (event) =>
@@ -70,6 +71,11 @@ const loadPlaylist = async (endpoint, elementId) => {
   }
 };
 
+const loadPlaylists = () => {
+  loadPlaylist(ENDPOINT.featuredPlaylist, "featured-playlist-items");
+  loadPlaylist(ENDPOINT.toplists, "top-playlist-items");
+};
+
 const formatTime = (duration) => {
   const min = Math.floor(duration / 60_000);
   const sec = ((duration % 6_000) / 1000).toFixed(0);
@@ -78,10 +84,6 @@ const formatTime = (duration) => {
   return formattedTime;
 };
 
-const loadPlaylists = () => {
-  loadPlaylist(ENDPOINT.featuredPlaylist, "featured-playlist-items");
-  loadPlaylist(ENDPOINT.toplists, "top-playlist-items");
-};
 
 const fillContentForDashboard = () => {
   const pageContent = document.querySelector("#page-content");
@@ -111,59 +113,78 @@ const onTrackSelection = (id, event) => {
   });
 };
 
-const updatedIconsForPlayMode =(id)=>{
-  playButton.querySelector("span").textContent = "pause_circle"
-  const playButtonFromTracks= document.querySelector(`#play-track${id}`)
-  playButtonFromTracks.textContent ="| |"
-}
+const updatedIconsForPlayMode = (id) => {
+  playButton.querySelector("span").textContent = "pause_circle";
+  const playButtonFromTracks = document.querySelector(`#play-track${id}`);
+  playButtonFromTracks.textContent = "| |"
+  playButtonFromTracks.setAttribute("data-play","true");
+};
 
 const AudioMetadataLoaded = (id) => {
   totalSongDuration.textContent = `0:${audio.duration.toFixed(0)}`;
-    updatedIconsForPlayMode(id);
+  updatedIconsForPlayMode(id);
 };
 
-const onNowPlayingPlayButtonClicked =(id)=>{
-  if(audio.paused){
-     audio.play();
-     updatedIconsForPlayMode(id);
-  }else{
-    audio.pause();
-    playButton.querySelector("span").textContent = "play_circle"
-    const playButtonFromTracks= document.querySelector(`#play-track${id}`)
-    playButtonFromTracks.textContent ="▶";
-  }
+const updateIconsForPause =(id)=>{
+  playButton.querySelector("span").textContent = "play_circle";
+  const playButtonFromTracks = document.querySelector(`#play-track${id}`);
+  playButtonFromTracks.textContent = "▶";
 }
 
-const onPlayTrack = (
-  event,
-  { image, artistNames, name, duration, previewUrl, id }
-) => {
-  console.log(image, artistNames, name, duration, previewUrl, id);
+const onNowPlayingPlayButtonClicked = (id) => {
+  if (audio.paused) {
+    audio.play();
+    updatedIconsForPlayMode(id);
+  } else {
+    audio.pause();
+    updateIconsForPause(id);
+   
+  }
+};
 
-  const nowPlayingSongImage = document.querySelector("#now-playing-image");
-  nowPlayingSongImage.src = image.url;
-  const songTitle = document.querySelector("#now-playing-song");
-  const artists = document.querySelector("#now-playing-artists");
-
-  songTitle.textContent = name;
-  artists.textContent - artistNames;
-
-  audio.src = previewUrl;
-  audio.removeEventListener("loadedmetadata",()=> AudioMetadataLoaded(id));
-  audio.addEventListener("loadedmetadata",()=> AudioMetadataLoaded(id));
-  playButton.addEventListener("click",()=>onNowPlayingPlayButtonClicked(id));
-  audio.play();
-  clearInterval(progressInterval);
-
-
-  progressInterval = setInterval(() => {
-    if (audio.paused) {
-      return
-    }
-    songDurationCompleted.textContent = `${audio.currentTime.toFixed(0)<10 ? "0:0"+ audio.currentTime.toFixed(0):audio.currentTime.toFixed(0)}`;
-    songProgress.style.width = `${(audio.currentTime / audio.duration) * 100}%`;
+const onPlayTrack = (event,{ image, artistNames, name, duration, previewUrl, id }) => {
+  const buttonWithDataPlay = document.querySelector(`[data-play="true"]`);
+  const button = event.target;
+  if(buttonWithDataPlay?.id ===`play-track${id}` ){
+  if(audio.paused){
+    audio.play();
+    updatedIconsForPlayMode(id);
+  }else{
+    audio.pause();
+    updateIconsForPause(id);
+  }
+  }else{
+    document.querySelectorAll("[data-play]").forEach(btn=>btn.setAttribute("data-play","false"));
+    console.log(image, artistNames, name, duration, previewUrl, id);
   
-  }, 100);
+    const nowPlayingSongImage = document.querySelector("#now-playing-image");
+    nowPlayingSongImage.src = image.url;
+    const songTitle = document.querySelector("#now-playing-song");
+    const artists = document.querySelector("#now-playing-artists");
+  
+    songTitle.textContent = name;
+    artists.textContent - artistNames;
+    if (!audio.paused) {
+    }
+    audio.src = previewUrl;
+    controller.abort();
+    audio.addEventListener("loadedmetadata", () => AudioMetadataLoaded(id) , {signal:controller.signal});
+    playButton.addEventListener("click", () => onNowPlayingPlayButtonClicked(id));
+    audio.play();
+    clearInterval(progressInterval);
+  
+    progressInterval = setInterval(() => {
+      if (audio.paused) {
+        return;
+      }
+      songDurationCompleted.textContent = `${
+        audio.currentTime.toFixed(0) < 10
+          ? "0:0" + audio.currentTime.toFixed(0)
+          : audio.currentTime.toFixed(0)
+      }`;
+      songProgress.style.width = `${(audio.currentTime / audio.duration) * 100}%`;
+    }, 100);
+  }
 };
 
 const loadPlaylistTracks = ({ tracks }) => {
@@ -181,15 +202,15 @@ const loadPlaylistTracks = ({ tracks }) => {
     let track = document.createElement("section");
     track.id = id;
     track.className =
-      "track p-1 grid grid-cols-[50px_2fr_1fr_50px] items-center justify-items-start gap-4 rounded-md hover:bg-light-black";
+      "track p-1 grid grid-cols-[50px_1fr_1fr_50px] items-center justify-items-start gap-4 rounded-md hover:bg-light-black";
     let image = album.images.find(img => img.height === 64);
     let artistNames = Array.from(artists, artist => artist.name).join(", ");
     track.innerHTML = `
   <p class="relative w-full flex items-center justify-center justify-self-center"><span class="track-no">${trackNumber++}</span></p>
   <section class="grid grid-cols-[auto_1fr] place-items-center gap-2">
-    <img class="h-10 w-8" src="${image.url}" alt="${name}" />
+    <img class="h-10 w-10" src="${image.url}" alt="${name}" />
     <article class="flex flex-col gap-2 justify-center">
-      <h2 class="text-base text-white line-clamp-1">${name}</h2>
+      <h2 class="text-base text-white line-clamp-1 song-title ">${name}</h2>
       <p class="text-xs line-clamp-1">${artistNames}</p>
     </article>
   </section>
@@ -206,7 +227,7 @@ const loadPlaylistTracks = ({ tracks }) => {
     );
     track.querySelector("p").appendChild(playButton);
     trackSections.appendChild(track);
-  } 
+  }
 };
 
 const fillContentForPlaylist = async (playlistId) => {
@@ -287,6 +308,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  volume.addEventListener("change",()=>{
+    audio.volume = volume.value / 100;
+  })
+
+  timeline.addEventListener("click",(e)=>{
+    const timelineWidth = window.getComputedStyle(timeline).width;
+    const timeToSeek = (e.OffsetX / parseInt(timelineWidth)) * audio.duration;
+    audio.currentTime = timeToSeek;
+    songProgress.style.width = `${(audio.currentTime / audio.duration)*100}%`;
+  }, false);
+  
   window.addEventListener("popstate", (event) => {
     loadSection(event.state);
   });
