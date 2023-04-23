@@ -145,10 +145,10 @@ const togglePlay = ()=>{
 
 const findCurrentTrack = () =>{
  const audioControl = document.querySelector("#audio-control");
- const trackId = audioControl.querySelector("data-track-id");
+ const trackId = audioControl.getAttribute("data-track-id");
  if(trackId){
   const loadedTracks = getItemInLocalStorage(LOADED_TRACKS);
-  const currentTrackIndex = loadedTracks?.findIndex(trk=> trk.id === trackId);
+  const currentTrackIndex = loadedTracks?.findIndex(track=> track.id === trackId);
   return {currentTrackIndex, tracks: loadedTracks};
  }
 return null;
@@ -156,13 +156,15 @@ return null;
 const playNextTrack = ()=>{
   const {currentTrackIndex =-1,tracks = null} = findCurrentTrack() ?? {};
   if(currentTrackIndex>-1 && currentTrackIndex < tracks?.length - 1){
-      playTrack(null, tracks[currentTrackIndex+1]);
+    const currentTrack = tracks[currentTrackIndex + 1];
+    playTrack(null, currentTrack);
   }
 }
 
 const playPrevTrack = ()=>{ const {currentTrackIndex =-1,tracks = null} = findCurrentTrack() ?? {};
 if(currentTrackIndex>0 ){
-    playTrack(null, tracks[currentTrackIndex-1]);
+    const prevTrack = tracks[currentTrackIndex - 1];
+    playTrack(null, prevTrack);
 }
 
 }
