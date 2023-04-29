@@ -14,6 +14,26 @@ const onProfileClick = (event) => {
     profileMenu.querySelector("li#logout").addEventListener("click", logout);
   }
 };
+
+const onUserPlaylistClick = (id)=>{
+    const section = {type:SECTIONTYPE.PLAYLIST,playlist:id};
+    history.pushState(section,"",`/dashboard/playlist/${id}`);
+    loadSection(section);
+}
+
+const loadUserPlaylists = async()=>{
+ const playlists =  await fetchRequest(ENDPOINT.userPlaylist);
+ const userPlaylistSection = document.querySelector("#user-playlists > ul");
+ userPlaylistSection.innerHTML = "";
+ for(let {name,id} of playlists.items){
+  const li = document.createElement("li");
+  li.textContent = name;
+  li.className = "cursor-pointer hover:text-white";
+  li.addEventListener("click",()=>onUserPlaylistClick(id));
+  userPlaylistSection.appendChild(li);
+ }
+}
+
 const loaduserProfile =  () => {
   return new Promise(async(resolve , reject)=>{
     const defaultImage = document.querySelector("#default-image");
@@ -331,6 +351,7 @@ const next = document.querySelector("#next");
 const prev = document.querySelector("#prev");
 let progressInterval;
  ({displayName} = await loaduserProfile()); 
+ loadUserPlaylists();
   const section = { type: SECTIONTYPE.DASHBOARD };
   // const section = {
   //   type: SECTIONTYPE.PLAYLIST,
