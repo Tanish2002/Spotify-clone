@@ -4,7 +4,7 @@ import { ENDPOINT, LOADED_TRACKS, SECTIONTYPE, getItemInLocalStorage, logout, se
 
 
 const audio = new Audio();
-
+let displayName;
 
 const onProfileClick = (event) => {
   event.stopPropagation();
@@ -14,23 +14,26 @@ const onProfileClick = (event) => {
     profileMenu.querySelector("li#logout").addEventListener("click", logout);
   }
 };
-const loaduserProfile = async () => {
-  const defaultImage = document.querySelector("#default-image");
-  const profileButton = document.querySelector("#user-profile-btn");
-  const displayNameElement = document.querySelector("#display-name");
-
-  const { display_name: displayName, images } = await fetchRequest(
-    ENDPOINT.userInfo
-  );
-
-  if (images?.length) {
-    defaultImage.classList.add("hidden");
-  } else {
-    defaultImage.classList.remove("hidden");
-  }
-
-  profileButton.addEventListener("click", onProfileClick);
-  displayNameElement.textContent = displayName;
+const loaduserProfile =  () => {
+  return new Promise(async(resolve , reject)=>{
+    const defaultImage = document.querySelector("#default-image");
+    const profileButton = document.querySelector("#user-profile-btn");
+    const displayNameElement = document.querySelector("#display-name");
+  
+    const { display_name: displayName, images } = await fetchRequest(
+      ENDPOINT.userInfo
+    );
+  
+    if (images?.length) {
+      defaultImage.classList.add("hidden");
+    } else {
+      defaultImage.classList.remove("hidden");
+    }
+  
+    profileButton.addEventListener("click", onProfileClick);
+    displayNameElement.textContent = displayName;
+    resolve({displayName});
+  })
 };
 
 const onPlaylistItemClicked = (event, id) => {
@@ -67,6 +70,8 @@ const loadPlaylists = () => {
   loadPlaylist(ENDPOINT.toplists, "top-playlist-items");
 };
 const fillContentForDashboard = () => {
+  const coverContent = document.querySelector("#cover-content");
+  coverContent.innerHTML = `<h1 class="text-6xl">Hello ${displayName}</h1>`
   const pageContent = document.querySelector("#page-content");
   const playlistMap = new Map([
     ["featured", "featured-playlist-items"],
@@ -254,7 +259,7 @@ const fillContentForPlaylist = async (playlistId) => {
   </section>`
   
   const pageContent = document.querySelector("#page-content");
-  pageContent.innerHTML = `<header id="playlist-header" class="mx-8 py-4 border-secondary border-b-[0.5px] z-10">
+  pageContent.innerHTML = `<header id="playlist-header" class="mx-8  border-secondary border-b-[0.5px] z-10">
   <nav class="py-2">
     <ul
       class="track grid grid-cols-[50px_1fr_1fr_50px] items-center justify-items-start gap-4 text-secondary rounded-md  ">
@@ -285,7 +290,7 @@ const onContentScroll = (event) => {
 
   if (history.state.type === SECTIONTYPE.PLAYLIST) {
     const playlistHeader = document.querySelector("#playlist-header");
-    if (scrollTop >= coverElement.offsetHeight - header.offsetHeight) {
+    if (coverOpacity <=35 ) {
       playlistHeader.classList.add("sticky", "bg-black-secondary", "px-8");
       playlistHeader.classList.remove("mx-8");
       playlistHeader.style.top = `${header.offsetHeight}px`;
@@ -312,7 +317,7 @@ const loadSection = (section) => {
     .addEventListener("scroll", onContentScroll);
 };
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async() => {
 const volume = document.querySelector("#volume");
 const playButton = document.querySelector("#play");
 
@@ -325,14 +330,14 @@ const audioControl = document.querySelector("#audio-control");
 const next = document.querySelector("#next");
 const prev = document.querySelector("#prev");
 let progressInterval;
-  loaduserProfile();
-  // const section = { type: SECTIONTYPE.DASHBOARD };
-  const section = {
-    type: SECTIONTYPE.PLAYLIST,
-    playlist: "37i9dQZF1DX44osRHySC1k",
-  };
-  // history.pushState(section, "", "");
-  history.pushState(section, "", `/dashboard/playlist/${section.playlist}`);
+ ({displayName} = await loaduserProfile()); 
+  const section = { type: SECTIONTYPE.DASHBOARD };
+  // const section = {
+  //   type: SECTIONTYPE.PLAYLIST,
+  //   playlist: "37i9dQZF1DX44osRHySC1k",
+  // };
+  history.pushState(section, "", "");
+  // history.pushState(section, "", `/dashboard/playlist/${section.playlist}`);
   loadSection(section);
   document.addEventListener("click", () => {
     const profileMenu = document.querySelector("#profile-menu");
