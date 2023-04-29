@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="../assets/Spotify_Icon_RGB_Green.png" type="image/x-icon">
     <link rel="stylesheet" href="../style.css" />
     <link
       rel="stylesheet"
@@ -15,7 +16,20 @@
     <main
       class="grid-template-areas grid h-full grid-cols-[250px_1fr] grid-rows-[1fr_auto]"
     >
-      <aside class="sidenav">sidenav</aside>
+      <aside class="sidenav">
+        <nav class="flex flex-col items-start px-8 py-8 gap-8">
+          <section>
+            <a href="/"></a>
+            <img class="h-10 w-full object-contain" src="../assets/Spotify_Logo_RGB_White.png" alt="Spotify-logo">
+          </section>
+          <section>
+            <ul class="flex flex-col gap-4 text-sm text-secondary">
+              <li class=" cursor-pointer flex items-center gap-2 hover:text-white"><span class="material-symbols-outlined">home</span><span>Home</span></li>
+              <li class=" cursor-pointer flex items-center gap-2 hover:text-white"><span class="material-symbols-outlined">search</span><span>Search</span></li>
+            </ul>
+          </section>
+        </nav>
+      </aside>
       <article class="content bg-transparent relative overflow-auto">
         <header class="header sticky top-0 bg-black-base/[0] z-10 px-8 py-4">
           <nav class="flex justify-end">
